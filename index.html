@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        #uploaded-image {
+            max-width: 100%;
+            margin-top: 20px;
+            display: none; /* Hide the image by default */
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Emotion Detection using CNN Model</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" id="image-input" accept="image/*" required>
+            <button type="submit" id="upload-button">Upload Image</button>
+        </form>
+        <img id="uploaded-image" src="#" alt="Uploaded Image">
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData();
+            var fileInput = document.getElementById('image-input');
+            var uploadedImage = document.getElementById('uploaded-image');
+            var resultDiv = document.getElementById('result');
+
+            formData.append('image', fileInput.files[0]);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                uploadedImage.style.display = 'block'; // Display the uploaded image
+                uploadedImage.src = URL.createObjectURL(fileInput.files[0]); // Set image source
+                resultDiv.innerText = 'Detected Emotion: ' + data.emotion;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
